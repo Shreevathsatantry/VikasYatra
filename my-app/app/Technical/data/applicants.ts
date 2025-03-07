@@ -4,14 +4,14 @@ export const applicants = [
     name: "Alex Johnson",
     email: "alex.johnson@example.com",
     resume: "resume_alex_johnson.pdf",
-    score: 85,
+    score: 0,
   },
   {
     id: 2,
     name: "Samantha Lee",
     email: "samantha.lee@example.com",
     resume: "resume_samantha_lee.pdf",
-    score: 92,
+    score: 0,
   },
   {
     id: 3,

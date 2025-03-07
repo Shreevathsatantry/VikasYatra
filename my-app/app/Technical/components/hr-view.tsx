@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input1"
 import { Label } from "@/components/ui/label1"
 import { Textarea } from "@/components/ui/textarea1"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs1"
+import { databases , COLLECTION_ID , DATABASE_ID } from "../../../appwrite/appwrite";
+import { ID } from "appwrite";
 import {
   ArrowLeftIcon,
   LayoutDashboardIcon,
@@ -32,13 +34,14 @@ export default function HRView({ onBack }: HRViewProps) {
   const [selectedJob, setSelectedJob] = useState<number | null>(null)
   const [showApplicants, setShowApplicants] = useState(false)
 
+  // Changed skills type from string[] to string
   const [newJob, setNewJob] = useState({
     title: "",
     company: "FairFi Inc.",
     description: "",
     location: "",
     salary: "",
-    skills: [] as string[],
+    skills: "", // Changed from string[] to string
   })
 
   const handleJobClick = (jobId: number) => {
@@ -46,28 +49,28 @@ export default function HRView({ onBack }: HRViewProps) {
     setShowApplicants(true)
   }
 
-  const handleCreateJob = (e: React.FormEvent) => {
-    e.preventDefault()
-    alert("Job created successfully!")
-    setActiveTab("dashboard")
-  }
-
-  const handleSkillInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && e.currentTarget.value.trim() !== "") {
-      e.preventDefault()
-      setNewJob({
-        ...newJob,
-        skills: [...newJob.skills, e.currentTarget.value.trim()],
-      })
-      e.currentTarget.value = ""
+  const handleCreateJob = async (e) => {
+    e.preventDefault();
+    try {
+      await databases.createDocument(
+        DATABASE_ID,
+        COLLECTION_ID,
+        ID.unique(),
+        newJob
+      );
+      alert("Job created successfully!");
+      setActiveTab("dashboard");
+    } catch (error) {
+      console.error("Error creating job:", error);
     }
-  }
+  };
 
-  const removeSkill = (index: number) => {
+  // Updated to handle skills as string
+  const handleSkillInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewJob({
       ...newJob,
-      skills: newJob.skills.filter((_, i) => i !== index),
-    })
+      skills: e.target.value
+    });
   }
 
   return (
@@ -252,26 +255,13 @@ export default function HRView({ onBack }: HRViewProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="skills">Required Skills (press Enter to add)</Label>
-                      <Input id="skills" onKeyDown={handleSkillInput} />
-
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {newJob.skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full flex items-center"
-                          >
-                            {skill}
-                            <button
-                              type="button"
-                              className="ml-1 text-orange-800 hover:text-orange-900"
-                              onClick={() => removeSkill(index)}
-                            >
-                              &times;
-                            </button>
-                          </span>
-                        ))}
-                      </div>
+                      <Label htmlFor="skills">Required Skills (comma-separated)</Label>
+                      <Input 
+                        id="skills" 
+                        value={newJob.skills}
+                        onChange={handleSkillInput}
+                        placeholder="e.g. React, TypeScript, Node.js"
+                      />
                     </div>
 
                     <div className="flex justify-end gap-4">
@@ -292,4 +282,3 @@ export default function HRView({ onBack }: HRViewProps) {
     </div>
   )
 }
-

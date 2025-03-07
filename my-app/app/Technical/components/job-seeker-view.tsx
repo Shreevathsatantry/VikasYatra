@@ -11,6 +11,9 @@ import { Label } from "@/components/ui/label1"
 import { ArrowLeftIcon, UploadIcon, CheckIcon } from "lucide-react"
 import { jobListings } from "../data/job-listings"
 import VideoRecorder from "./video-recorder"
+import { databases, COLLECTION_ID1, DATABASE_ID, BUCKET_ID } from "../../../appwrite/appwrite"
+import { ID, Storage } from "appwrite"
+import client from "../../../appwrite/appwrite"
 
 interface JobSeekerViewProps {
   onBack: () => void
@@ -21,21 +24,71 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
   const [showApplicationForm, setShowApplicationForm] = useState(false)
   const [showInterviewProcess, setShowInterviewProcess] = useState(false)
   const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     resume: null as File | null,
+    score: 0, // Initial score
   })
+  const [applicationDocId, setApplicationDocId] = useState("");
+
+  // Initialize Appwrite Storage
+  const storage = new Storage(client)
 
   const handleApply = (jobId: number) => {
     setSelectedJob(jobId)
     setShowApplicationForm(true)
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setShowApplicationForm(false)
-    setShowInterviewProcess(true)
+    setIsUploading(true)
+
+    try {
+      // Only proceed if a resume file was selected
+      if (formData.resume) {
+        // 1. Upload the resume to Appwrite storage
+        const uploadResponse = await storage.createFile(
+          BUCKET_ID,
+          ID.unique(),
+          formData.resume
+        )
+
+        // 2. Get the resume file ID (storage ID)
+        const resumeFileId = uploadResponse.$id
+
+        // 3. Create a document in the database with all the data
+        // Make sure these field names match your collection schema
+        const docResponse = await databases.createDocument(
+          DATABASE_ID,
+          COLLECTION_ID1,
+          ID.unique(),
+          {
+            name: formData.name,
+            email: formData.email,
+            score: formData.score,
+            resumeid: resumeFileId, // Using the exact field name that exists in your schema
+            jobId: selectedJob?.toString() || "",
+            status: "Interview in progress"
+          }
+        )
+
+        // Save the document ID for later updates
+        setApplicationDocId(docResponse.$id)
+
+        // Continue to interview process
+        setShowApplicationForm(false)
+        setShowInterviewProcess(true)
+      } else {
+        alert("Please upload your resume before submitting")
+      }
+    } catch (error) {
+      console.error("Error submitting application:", error)
+      alert("There was an error submitting your application. Please try again.")
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,13 +100,64 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
     }
   }
 
-  const handleNextQuestion = () => {
-    if (currentQuestion < interviewQuestions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
+  const handleNextQuestion = async () => {
+    // Increment score - in a real app, you'd calculate this based on the answer quality
+    const newScore = formData.score + 20 // Just for demo, add 20 points per question
+    
+    // Update formData with new score
+    setFormData({
+      ...formData,
+      score: newScore
+    })
+
+    // If we have the document ID, update the score in the database
+    if (applicationDocId) {
+      try {
+        if (currentQuestion === interviewQuestions.length - 1) {
+          // If this is the last question, update the final score and status
+          await databases.updateDocument(
+            DATABASE_ID,
+            COLLECTION_ID1,
+            applicationDocId,
+            {
+              score: newScore,
+              status: "Interview completed"
+            }
+          )
+          
+          // Interview completed
+          alert(`Thank you for completing the interview process! Your application has been submitted with a score of ${newScore}/100.`)
+          onBack()
+        } else {
+          // Just update the score and move to next question
+          await databases.updateDocument(
+            DATABASE_ID,
+            COLLECTION_ID1,
+            applicationDocId,
+            {
+              score: newScore
+            }
+          )
+          setCurrentQuestion(currentQuestion + 1)
+        }
+      } catch (error) {
+        console.error("Error updating score:", error)
+        // Continue anyway to not block the user experience
+        if (currentQuestion < interviewQuestions.length - 1) {
+          setCurrentQuestion(currentQuestion + 1)
+        } else {
+          alert("Thank you for completing the interview process! Your application has been submitted.")
+          onBack()
+        }
+      }
     } else {
-      // Interview completed
-      alert("Thank you for completing the interview process! Your application has been submitted.")
-      onBack()
+      // If we don't have the document ID for some reason, just proceed with the UI flow
+      if (currentQuestion < interviewQuestions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1)
+      } else {
+        alert("Thank you for completing the interview process! Your application has been submitted.")
+        onBack()
+      }
     }
   }
 
@@ -92,11 +196,7 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
                   <CardContent className="flex-grow">
                     <p className="text-sm text-gray-600 mb-4">{job.description}</p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {job.skills.map((skill, index) => (
-                        <span key={index} className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">
-                          {skill}
-                        </span>
-                      ))}
+                    <p className="text-sm text-gray-600 mb-4"><strong>Skills Required:</strong>{job.skills}</p>
                     </div>
                     <p className="text-sm text-gray-600">
                       <strong>Location:</strong> {job.location}
@@ -172,8 +272,12 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
                     <Button type="button" variant="outline" onClick={() => setShowApplicationForm(false)}>
                       Cancel
                     </Button>
-                    <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white">
-                      Submit Application
+                    <Button 
+                      type="submit" 
+                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                      disabled={isUploading || !formData.resume}
+                    >
+                      {isUploading ? "Uploading..." : "Submit Application"}
                     </Button>
                   </div>
                 </form>
@@ -239,4 +343,3 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
     </div>
   )
 }
-
