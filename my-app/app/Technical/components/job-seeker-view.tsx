@@ -18,16 +18,20 @@ import { set } from "zod"
 interface JobSeekerViewProps {
   onBack: () => void
 }
-
-// Inline VideoRecorder component (previously imported)
-function VideoRecorder() {
+// Inline VideoRecorder component with Appwrite storage integration
+function VideoRecorder({ onVideoUploaded }) {
   const [isRecording, setIsRecording] = useState(false)
   const [recordingComplete, setRecordingComplete] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<BlobPart[]>([])
   const [stream, setStream] = useState<MediaStream | null>(null)
-  const [videoFileName , setVideofilename] = useState<string | null>(null)
+  const [videoFileName, setVideoFileName] = useState<string | null>(null)
+  const [videoBlob, setVideoBlob] = useState<Blob | null>(null)
+  
+  // Initialize Appwrite Storage
+  const storage = new Storage(client)
 
   useEffect(() => {
     // Initialize camera to show preview even before recording
@@ -57,6 +61,9 @@ function VideoRecorder() {
   const startRecording = async () => {
     try {
       chunksRef.current = []
+      setRecordingComplete(false)
+      setVideoBlob(null)
+      setVideoFileName(null)
 
       if (!stream) {
         const videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -79,18 +86,17 @@ function VideoRecorder() {
 
         mediaRecorder.onstop = () => {
           const blob = new Blob(chunksRef.current, { type: "video/mp4" })
-          const url = URL.createObjectURL(blob)
-
-          // Create download link
-          const a = document.createElement("a")
-          a.href = url
-          a.download = `interview-recording-${new Date().toISOString()}.mp4`
-          setVideofilename(a.download)
-          a.click()
-
-          // Clean up
-          URL.revokeObjectURL(url)
+          setVideoBlob(blob)
+          
+          const now = new Date()
+          const formattedDateTime = now.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0]
+          const filename = `interview-recording-${formattedDateTime}.mp4`
+          setVideoFileName(filename)
+          
           setRecordingComplete(true)
+          
+          // Upload the video immediately when recording stops
+          uploadVideo(blob, filename)
         }
 
         mediaRecorder.start()
@@ -105,13 +111,47 @@ function VideoRecorder() {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop()
       setIsRecording(false)
+    }
+  }
+  
+  // Move upload logic to a separate function that's called only when recording stops
+  const uploadVideo = async (blob, filename) => {
+    if (!blob || !filename) return
+    
+    setIsUploading(true)
+    try {
+      // First fetch the path from your API
+      const response = await fetch('http://127.0.0.1:5000/PathMp4')
+      const data = await response.json()
+      console.log('Video file path:', data.message)
+      console.log('Video file name:', filename)
       
+      // Convert Blob to File for Appwrite storage
+      const videoFile = new File([blob], filename, { type: 'video/mp4' })
+      
+      // Upload video to Appwrite
+      const uploadResponse = await storage.createFile(
+        BUCKET_ID,
+        ID.unique(),
+        videoFile
+      )
+      
+      // Get the video file ID
+      const videoFileId = uploadResponse.$id
+      console.log('Video uploaded to Appwrite, file ID:', videoFileId)
+      
+      // Send the ID back to parent component
+      onVideoUploaded(videoFileId)
+    } catch (error) {
+      console.error('Error processing video:', error)
+    } finally {
+      setIsUploading(false)
     }
   }
 
   return (
     <div className="space-y-4">
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg overflow-hidden aspect-video shadow-xl border border-gray-700">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg overflow-hidden aspect-video shadow-xl border border-gray-700 relative">
         <video ref={videoRef} autoPlay muted={isRecording} className="w-full h-full object-cover" />
 
         {isRecording && (
@@ -123,7 +163,16 @@ function VideoRecorder() {
           </div>
         )}
 
-        {recordingComplete && !isRecording && (
+        {isUploading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="text-center p-4">
+              <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+              <p className="text-white font-medium">Uploading video...</p>
+            </div>
+          </div>
+        )}
+
+        {recordingComplete && !isRecording && !isUploading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="text-center p-4">
               <CheckCircleIcon className="h-12 w-12 text-green-400 mx-auto mb-2" />
@@ -137,7 +186,7 @@ function VideoRecorder() {
         {!isRecording ? (
           <Button
             onClick={startRecording}
-            disabled={recordingComplete}
+            disabled={isUploading}
             className="bg-green-500 hover:bg-green-600 text-white shadow-lg transform transition hover:scale-105"
           >
             <PlayIcon className="h-4 w-4 mr-2" /> Start Recording
@@ -154,7 +203,7 @@ function VideoRecorder() {
     </div>
   )
 }
-
+// Modify the JobSeekerView component to handle the video upload
 export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
   const [selectedJob, setSelectedJob] = useState<number | null>(null)
   const [showApplicationForm, setShowApplicationForm] = useState(false)
@@ -166,6 +215,7 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
     email: "",
     resume: null as File | null,
     score: 0, // Initial score
+    videoId: null as string | null, // Add videoId field to store the uploaded video ID
   })
   const [applicationDocId, setApplicationDocId] = useState("");
 
@@ -236,6 +286,31 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
     }
   }
 
+  // Add a handler for video upload completion
+  const handleVideoUploaded = (videoId: string) => {
+    setFormData({
+      ...formData,
+      videoId: videoId
+    });
+    
+    // If we have the document ID, update the document with the video ID
+    if (applicationDocId) {
+      try {
+        databases.updateDocument(
+          DATABASE_ID,
+          COLLECTION_ID1,
+          applicationDocId,
+          {
+            videoId: videoId // Add the videoId to the document
+          }
+        );
+        console.log("Document updated with video ID:", videoId);
+      } catch (error) {
+        console.error("Error updating document with video ID:", error);
+      }
+    }
+  };
+
   const handleNextQuestion = async () => {
     // Increment score - in a real app, you'd calculate this based on the answer quality
     const newScore = formData.score + 20 // Just for demo, add 20 points per question
@@ -257,7 +332,9 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
             applicationDocId,
             {
               score: newScore,
-              status: "Interview completed"
+              status: "Interview completed",
+              // Include videoId if it exists
+              ...(formData.videoId ? { videoId: formData.videoId } : {})
             }
           )
           
@@ -271,7 +348,9 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
             COLLECTION_ID1,
             applicationDocId,
             {
-              score: newScore
+              score: newScore,
+              // Include videoId if it exists
+              ...(formData.videoId ? { videoId: formData.videoId } : {})
             }
           )
           setCurrentQuestion(currentQuestion + 1)
@@ -451,7 +530,7 @@ export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
                   </div>
 
                   <div>
-                    <VideoRecorder />
+                    <VideoRecorder onVideoUploaded={handleVideoUploaded} />
 
                     <div className="mt-6 flex justify-end">
                       <Button
