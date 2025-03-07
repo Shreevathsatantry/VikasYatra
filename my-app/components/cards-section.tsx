@@ -5,34 +5,34 @@ import { ArrowRight, Briefcase, Users, Utensils } from "lucide-react"
 import { Button } from "@/components/ui/button1"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card1"
 import Link from "next/link"
-
+// import daily from "../public/dailyW.jpeg"
 const cardData = [
   {
     title: "Daily Wage",
     description:
       "Connect daily wage workers with employers, ensuring fair pay and better working conditions. Our platform helps reduce exploitation and creates sustainable livelihoods.",
     icon: Briefcase,
-    link: "/daily-wage",
+    link: "/DW",
     color: "bg-vikas-orange",
-    image: "/placeholder.svg?height=200&width=300",
+    image: "/dailyW.jpeg",
   },
   {
     title: "Tech Skilled Professionals",
     description:
       "Empower tech professionals from underprivileged backgrounds with training, mentorship, and job opportunities in the growing digital economy.",
     icon: Users,
-    link: "/tech-professionals",
+    link: "/Technical",
     color: "bg-vikas-orangeLight",
-    image: "/placeholder.svg?height=200&width=300",
+    image: "/Tech.jpeg",
   },
   {
     title: "FoodShare",
     description:
       "Reduce food waste and hunger by connecting food donors with those in need in your community. Help create a world where no one goes hungry.",
     icon: Utensils,
-    link: "/food-share",
+    link: "/FoodPOV",
     color: "bg-vikas-yellow",
-    image: "/placeholder.svg?height=200&width=300",
+    image: "/share.jpeg",
   },
 ]
 
