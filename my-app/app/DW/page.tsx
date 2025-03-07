@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { Sidebar } from "@/components/sidebar"
+import { useNavigate } from 'react-router-dom';
 import { useState } from "react"
 import { ChevronUp, Briefcase, FileText, MessageSquare } from "lucide-react"
 
@@ -21,9 +21,7 @@ export default function DailyWageWorkersPage() {
             <h2 className="text-2xl md:text-3xl font-bold mt-2">Empowering Daily Wage Workers</h2>
           </div>
           <div className="mt-4 md:mt-0">
-            <button className="bg-[#FF9D2E] text-white px-6 py-3 rounded-full flex items-center gap-2 hover:bg-[#e88c1e] transition-colors">
-              Learn More <ChevronUp className="h-4 w-4 rotate-180" />
-            </button>
+            
           </div>
         </div>
       </header>
@@ -34,7 +32,6 @@ export default function DailyWageWorkersPage() {
           <h3 className="inline-block px-6 py-2 bg-[#FFE8CC] text-[#FF9D2E] rounded-full font-medium mb-4">
             Our Support Programs
           </h3>
-          <Sidebar />
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Resources for Daily Wage Workers</h2>
           <p className="text-gray-700 text-lg">
             VikasYatra is committed to supporting daily wage workers through access to government schemes, job
@@ -118,47 +115,80 @@ function Card({ icon, title, description, isActive, onClick }: CardProps) {
       <div className="bg-[#FFE8CC] p-4 rounded-full inline-block mb-4">{icon}</div>
       <h3 className="text-xl font-bold mb-2">{title}</h3>
       <p className="text-gray-600 mb-4">{description}</p>
-      <div className="flex items-center text-[#FF9D2E] font-medium">
-        {isActive ? "Hide details" : "View details"}
-        <ChevronUp className={`ml-2 h-4 w-4 transition-transform ${isActive ? "" : "rotate-180"}`} />
-      </div>
     </div>
-  )
+  );
 }
 
 function SchemesContent() {
   const schemes = [
     {
       id: 1,
-      title: "PM-KISAN",
+      title: "Prime Minister Awaas Yojana - Gramin",
       category: "Agriculture",
-      description: "Financial support for farmers and agricultural workers",
+      description: "The main objective of the PM Awas Yojana Scheme is housing that is affordable for all by the year 2022. The Pradhan Mantri Awas Yojana Gramin (PMAY-G) was formerly called the Indira Awas Yojana and was renamed in March 2016. It is targeted at promoting accessibility and affordability of housing for all of rural India with the exceptions of Delhi and Chandigarh.",
+      url:"https://schemes.vikaspedia.in/viewcontent/schemesall/schemes-for-unemployed/prime-minister-awaas-yojana-gramin?lgn=en"
     },
     {
       id: 2,
-      title: "MGNREGA",
+      title: "Udiyaman Swanirbhar Karmasansthan Prakalpa (USKP)",
       category: "Employment",
-      description: "Guaranteed wage employment for rural households",
+      description: "The objective of the Scheme is to assist validly registered unemployed youth to take up economically viable projects by providing subsidy from the West Bengal state government and credit on easy terms from banks and financial institutions.",
+      url:"https://schemes.vikaspedia.in/viewcontent/schemesall/schemes-for-unemployed-and-poor/udiyaman-swanirbhar-karmasansthan-prakalpa-uskp?lgn=en"
     },
     {
       id: 3,
-      title: "PM Awas Yojana",
+      title: "State Assisted Scheme Of Provident Fund For Unorganised Sector.",
       category: "Housing",
-      description: "Affordable housing for economically weaker sections",
+      description: "The Department of Labour seeks to enforce labour laws and also facilitate the worker’s fundamental rights at their workplace. Let us look in detail about the SASPFUW scheme",
+      url:"https://schemes.vikaspedia.in/viewcontent/schemesall/schemes-for-unemployed/schemes-for-unemployed-womens-schemes-for-unemployed/state-assisted-scheme-of-provident-fund-for-unorganised-sector?lgn=en"
     },
     {
       id: 4,
-      title: "Ayushman Bharat",
+      title: "Udiyaman Swanirbhar Karmasansthan Prakalpa(USKP)",
       category: "Healthcare",
-      description: "Health insurance coverage for low-income families",
+      description: "The objective of the Scheme is to assist validly registered unemployed youth to take up economically viable projects by providing subsidy from the state government and credit on easy terms from banks and financial institutions.",
+      url:"https://schemes.vikaspedia.in/viewcontent/schemesall/schemes-for-unemployed/schemes-for-unemployed-womens-schemes-for-unemployed/udiyaman-swanirbhar-karmasansthan-prakalpauskp?lgn=en"
     },
     {
       id: 5,
-      title: "PM Shram Yogi Maandhan",
+      title: "Mai Bhago Istri Shakti Scheme",
       category: "Pension",
-      description: "Pension scheme for unorganized sector workers",
+      description: "The scheme intends to help women for establishing micro and small business in rural areas. The assistance under the MBIS scheme will be available in any sector for imparting skills related to employability and entrepreneurship.",
+      url:"https://schemes.vikaspedia.in/viewcontent/schemesall/schemes-for-unemployed/schemes-for-unemployed-women/mai-bhago-istri-shakti-scheme?lgn=en"
     },
-  ]
+    {
+      id: 6,
+      title: "Social security relief to dependents of workers passing away due to COVID-19",
+      category: "Pension",
+      description: "The Ministry of Labour and Employment has announced additional benefits for workers through ESIC and EPFO schemes to address the fear and anxiety of workers about well-being of their family members due to increase in incidences of death due to COVID -19 pandemic.",
+      url:"https://schemes.vikaspedia.in/viewcontent/schemesall/schemes-for-unemployed-and-poor/social-security-relief-to-dependents-of-workers-passing-away-due-to-covid19?lgn=en"
+    },
+    {
+      id: 7,
+      title: "Ayushman Bharat",
+      category: "Pension",
+      description: "Ayushman Bharat, a flagship scheme of Government of India, was launched as recommended by the National Health Policy 2017, to achieve the vision of Universal Health Coverage (UHC). This initiative has been designed to meet Sustainable Development Goals (SDGs) and its underlining commitment, which is to   leave no one behind.",
+      url:"https://schemes.vikaspedia.in/viewcontent/schemesall/schemes-for-unemployed/ayushman-bharat?lgn=en"
+    },
+    {
+      id: 8,
+      title: "Pradhan Mantri Janjati Adivasi Nyaya Maha Abhiyan",
+      category: "Pension",
+      description: "The Union Cabinet during November 2023 approved Pradhan Mantri Janjati Adivasi Nyaya Maha Abhiyan (PM JANMAN) with total outlay of Rs.24,104 crore (Central Share:Rs.15,336 crore and State Share: Rs.8,768 crore) to focus on 11 critical interventions through 9 line Ministries.  The scheme is implemented during FY 2023-24 to 2025-26.",
+      url:"https://schemes.vikaspedia.in/viewcontent/schemesall/schemes-for-unemployed-and-poor/pradhan-mantri-janjati-adivasi-nyaya-maha-abhiyan?lgn=en"
+    },
+    {
+      id: 9,
+      title: "Model Skill Loan Scheme",
+      category: "Pension",
+      description: "The Skill Loan Scheme was launched in July 2015 to provide institutional credit to individuals for skill development courses aligned to National Occupations Standards and Qualification Packs and leading to a certificate/diploma/degree by training institutes as per National Skill Qualification Framework (NSQF).Ministry of Skill Development & Entrepreneurship (MSDE) during July 2024 launched the revised Model Skill Loan Scheme. It aims at providing access to skilling courses, including high-end courses which often come with high course fee, without any financial constraints. This will empower the youth of India to be future- ready workforce.",
+      url:"https://schemes.vikaspedia.in/viewcontent/schemesall/schemes-for-unemployed-and-poor/model-skill-loan-scheme?lgn=en"
+    },
+  ];
+
+  const handleApplyClick = (url) => {
+    window.open(url, '_blank');
+  };
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-md">
@@ -173,114 +203,179 @@ function SchemesContent() {
                   {scheme.category}
                 </span>
               </div>
-              <button className="text-[#FF9D2E] hover:underline">Apply</button>
+              <button
+                onClick={() => handleApplyClick(scheme.url)}
+                className="mt-2 bg-[#FF9D2E] text-white px-4 py-2 rounded hover:bg-[#e88c1e]"
+              >
+                More Info
+              </button>
             </div>
             <p className="text-gray-600 mt-2">{scheme.description}</p>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
-
 function JobsContent() {
   const jobs = [
     {
       id: 1,
-      title: "Construction Worker",
-      location: "Delhi NCR",
-      wage: "₹500-600/day",
-      duration: "3 months",
+      title: "Hotel housekeeper",
+      description: "Hotel housekeepers are responsible for more than just cleaning hotel rooms. They typically change sheets, make beds, provide fresh towels, shower curtains and toiletries like shampoo and soaps. Many housekeepers are also responsible for working in the laundry room to wash, dry and fold linens and towels. Oftentimes, housekeepers employ a variety of skills.",
+      wage: "keep this empty for the time being",
+      url: "https://careers.marriott.com/housekeeper/job/4C73C591C7D0D8D8BB4CF6DCFBC6D45B"
     },
     {
       id: 2,
-      title: "Farm Labor",
-      location: "Punjab",
-      wage: "₹450-550/day",
-      duration: "Seasonal",
+      title: "Food preparation worker",
+      description: "Food prep workers are responsible for sanitizing and maintaining a clean work area and utensils used for cooking and preparing food. They commonly work in restaurants, but can also be employed in hotels, hospitals and healthcare facilities. Food prep workers may also work alongside chefs, cooks and food service managers to prepare meals.",
+      wage: "keep this empty for the time being",
+      url: "https://www.lindabeansperfectmaine.com/perfect-maine/join-our-team/"
     },
     {
       id: 3,
-      title: "Factory Helper",
-      location: "Gurgaon",
-      wage: "₹12,000/month",
-      duration: "Permanent",
+      title: "Personal care assistant",
+      description: "Personal care assistants work with clients to schedule and attend doctor appointments, as well as provide transportation or arrange for client transportation to and from appointments. Personal care assistants may also help clients with completing daily tasks such as grocery shopping and picking up medicines and other supplies. Personal care aides may also be responsible for preparing and cooking meals, administer medicines on schedule and serve as a companion for their clients.",
+      wage: "keep this empty for the time being",
+      url: "https://smartapply.indeed.com/beta/indeedapply/form/profile-location"
     },
     {
       id: 4,
-      title: "Housekeeping Staff",
-      location: "Noida",
-      wage: "₹13,500/month",
-      duration: "Permanent",
+      title: "Restaurant server",
+      description: "Restaurant servers take orders, communicate with kitchen staff and deliver meals and remove spent dishes. Servers are frequently considered the most common hospitality workers, and they can usually be employed by restaurants, hotels, healthcare facilities and even cruise lines.",
+      wage: "keep this empty for the time being",
+      url: "https://smartapply.indeed.com/beta/indeedapply/form/resume"
     },
     {
       id: 5,
-      title: "Delivery Associate",
-      location: "Multiple Locations",
-      wage: "₹15,000-18,000/month",
-      duration: "Permanent",
+      title: "Childcare provider",
+      description: "Childcare providers work with lead teachers, assistants and other educational workers to provide the care and support of children, typically from infants to elementary school age. Childcare providers are also responsible for assisting in the delivery of lessons, activities and other extracurricular activities, as well as provide an enriching environment for before and after school care kids. Childcare providers may also utilize the opportunities for professional development to help them advance their careers further in the educational field.",
+      wage: "keep this empty for the time being",
+      url: "https://lifeworksnw.e3applicants.com/careers/Childcare-Provider-On-Call-518-1659?source=Indeed.com"
     },
+    {
+      id: 6,
+      title: "Bartender",
+      description: "Bartenders can be considered another essential team member for any bar and restaurant business. Oftentimes called \"mixologists,\" bartenders are responsible for not only pouring, mixing and serving alcoholic beverages to customers, but they are also responsible for adhering to public safety standards and federal and state regulations when serving alcohol. Bartenders may also be required to possess a state liquor license, depending on their place of residence. Furthermore, bartending can be an effective way to gain customer service and interpersonal skills, as well as conflict resolution skills.",
+      wage: "keep this empty for the time being",
+      url: "https://smartapply.indeed.com/beta/indeedapply/form/profile-location"
+    },
+    {
+      id: 7,
+      title: "Home health aide",
+      description: "Home health aides may work with a registered nurse or nursing assistant to monitor and care for patients by observing physical and mental well-being, recording vital signs, monitoring eating habits, helping patients perform daily functions and providing opportunities for exercise. Home health aides may also offer housekeeping and assistant services, such as shopping for groceries, medicines and other supplies.",
+      wage: "keep this empty for the time being",
+      url: "https://smartapply.indeed.com/beta/indeedapply/form/profile-location"
+    },
+    {
+      id: 8,
+      title: "Retail sales assistant manager",
+      description: "Retail sales assistant managers work in support of the store or department manager in a retail setting. They may typically perform daily functions in a supervisory role, such as managing employees, work with customers and carry out the directives of the manager, director or owner of the store.",
+      wage: "keep this empty for the time being",
+      url: "https://my.peoplematter.com/mja/122330/jobapp/GetStarted?jobOpenings=3334d575-03bd-461f-9d51-a88700eb54dd&refererUrl=https://www.indeed.com/"
+    },
+    {
+      id: 9,
+      title: "Nursing assistant",
+      description: "Nursing assistants work under the mentorship and supervision of registered nurses and help patients with daily activities such as eating, bathing, dressing and moving around their environment. Nurse's aides may also be responsible for providing basic health care for patients in hospitals, as well as residents of long-term care facilities like nursing homes and assisted living facilities. They may also help transport patients to and from rooms and treatment areas.",
+      wage: "keep this empty for the time being",
+      url: "https://smartapply.indeed.com/beta/indeedapply/form/profile-location"
+    }
   ]
-
+  const handleApplyClick = (url) => {
+    window.open(url, '_blank');
+  };
   return (
     <div className="bg-white rounded-xl p-6 shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">Job Opportunities</h2>
       <div className="space-y-4">
-        {jobs.map((job) => (
-          <div key={job.id} className="border-b border-gray-100 pb-4 last:border-0">
+        {jobs.map((scheme) => (
+          <div key={scheme.id} className="border-b border-gray-100 pb-4 last:border-0">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-bold text-lg">{job.title}</h3>
-                <div className="flex gap-2 mt-1 flex-wrap">
-                  <span className="inline-block bg-[#FFE8CC] text-[#FF9D2E] text-sm px-3 py-1 rounded-full">
-                    {job.location}
-                  </span>
-                  <span className="inline-block bg-[#E6F7FF] text-[#0091FF] text-sm px-3 py-1 rounded-full">
-                    {job.wage}
-                  </span>
-                  <span className="inline-block bg-[#F0F0F0] text-gray-600 text-sm px-3 py-1 rounded-full">
-                    {job.duration}
-                  </span>
-                </div>
+                <h3 className="font-bold text-lg">{scheme.title}</h3>
+                <span className="inline-block bg-[#FFE8CC] text-[#FF9D2E] text-sm px-3 py-1 rounded-full mt-1">
+                  {scheme.wage}
+                </span>
               </div>
-              <button className="text-[#FF9D2E] hover:underline">Apply</button>
+              <button
+                onClick={() => handleApplyClick(scheme.url)}
+                className="mt-2 bg-[#FF9D2E] text-white px-4 py-2 rounded hover:bg-[#e88c1e]"
+              >
+                More Info
+              </button>
             </div>
+            <p className="text-gray-600 mt-2">{scheme.description}</p>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 function ChatbotContent() {
   const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([
     { text: "Hello! I'm your VikasYatra assistant. How can I help you today?", isUser: false },
-  ])
-  const [input, setInput] = useState("")
+  ]);
+  const [input, setInput] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleSendMessage = () => {
-    if (!input.trim()) return
+  const handleSendMessage = async () => {
+    if (!input.trim()) return;
 
-    // Add user message
-    setMessages([...messages, { text: input, isUser: true }])
+    setMessages([...messages, { text: input, isUser: true }]);
 
-    // Simulate bot response
-    setTimeout(() => {
-      let response = "Thank you for your message. Our team will help you with this query soon."
+    try {
+      const response = await fetch("http://127.0.0.1:5000/LearnBot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: input }),
+      });
 
-      if (input.toLowerCase().includes("scheme") || input.toLowerCase().includes("government")) {
-        response =
-          "We have several government schemes available. You can check the Schemes section for more details, or ask me specific questions about eligibility."
-      } else if (input.toLowerCase().includes("job") || input.toLowerCase().includes("work")) {
-        response =
-          "We regularly update our job listings. Please check the Job Opportunities section for the latest openings in your area."
-      }
+      const data = await response.json();
+      setMessages((prev) => [...prev, { text: data.response, isUser: false }]);
+    } catch (error) {
+      console.error("Error fetching response:", error);
+      setMessages((prev) => [...prev, { text: "Sorry, something went wrong. Please try again.", isUser: false }]);
+    }
 
-      setMessages((prev) => [...prev, { text: response, isUser: false }])
-    }, 1000)
+    setInput("");
+  };
 
-    setInput("")
-  }
+  const handleFileUpload = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log("File uploaded:", data.message);
+
+      // Automatic file download
+      const fileURL = URL.createObjectURL(selectedFile);
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.download = selectedFile.name; // Keep the original filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Cleanup URL after download
+      setTimeout(() => URL.revokeObjectURL(fileURL), 100);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+    setSelectedFile(null); //reset the file.
+  };
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-md">
@@ -302,10 +397,24 @@ function ChatbotContent() {
 
       <div className="flex gap-2">
         <input
+          type="file"
+          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+          className="border border-gray-300 rounded-lg px-2 py-1"
+        />
+        <button
+          onClick={handleFileUpload}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Upload & Download File
+        </button>
+      </div>
+
+      <div className="flex gap-2 mt-4">
+        <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           placeholder="Type your question here..."
           className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF9D2E]"
         />
@@ -317,6 +426,5 @@ function ChatbotContent() {
         </button>
       </div>
     </div>
-  )
+  );
 }
-
