@@ -1,0 +1,81 @@
+export const jobListings = [
+  {
+    id: 1,
+    title: "Frontend Developer",
+    company: "FairFi Inc.",
+    description:
+      "We're looking for a skilled Frontend Developer to join our team and help build responsive, user-friendly web applications using modern JavaScript frameworks.",
+    location: "Remote",
+    salary: "$80,000 - $110,000",
+    skills: ["React", "TypeScript", "CSS", "HTML"],
+    postedDate: "Mar 1, 2023",
+    applicants: 12,
+    status: "Active",
+  },
+  {
+    id: 2,
+    title: "Backend Engineer",
+    company: "FairFi Inc.",
+    description:
+      "Join our engineering team to develop scalable backend systems and APIs that power our platform. You'll work with modern technologies in a collaborative environment.",
+    location: "New York, NY",
+    salary: "$90,000 - $120,000",
+    skills: ["Node.js", "Python", "SQL", "AWS"],
+    postedDate: "Feb 15, 2023",
+    applicants: 8,
+    status: "Active",
+  },
+  {
+    id: 3,
+    title: "UX/UI Designer",
+    company: "FairFi Inc.",
+    description:
+      "We're seeking a talented UX/UI Designer to create beautiful, intuitive interfaces for our products. You'll work closely with our product and engineering teams.",
+    location: "San Francisco, CA",
+    salary: "$85,000 - $115,000",
+    skills: ["Figma", "Adobe XD", "User Research", "Prototyping"],
+    postedDate: "Mar 5, 2023",
+    applicants: 15,
+    status: "Active",
+  },
+  {
+    id: 4,
+    title: "DevOps Engineer",
+    company: "FairFi Inc.",
+    description:
+      "Help us build and maintain our cloud infrastructure, CI/CD pipelines, and deployment processes. You'll play a key role in ensuring our systems are reliable and scalable.",
+    location: "Remote",
+    salary: "$95,000 - $125,000",
+    skills: ["AWS", "Docker", "Kubernetes", "CI/CD"],
+    postedDate: "Feb 28, 2023",
+    applicants: 6,
+    status: "Active",
+  },
+  {
+    id: 5,
+    title: "Product Manager",
+    company: "FairFi Inc.",
+    description:
+      "We're looking for a Product Manager to help define our product strategy and roadmap. You'll work with cross-functional teams to deliver features that delight our users.",
+    location: "Chicago, IL",
+    salary: "$100,000 - $130,000",
+    skills: ["Product Strategy", "Agile", "User Stories", "Roadmapping"],
+    postedDate: "Mar 10, 2023",
+    applicants: 9,
+    status: "Active",
+  },
+  {
+    id: 6,
+    title: "Data Scientist",
+    company: "FairFi Inc.",
+    description:
+      "Join our data team to analyze user behavior, build predictive models, and extract insights that drive business decisions. You'll work with large datasets and modern ML tools.",
+    location: "Boston, MA",
+    salary: "$90,000 - $120,000",
+    skills: ["Python", "SQL", "Machine Learning", "Data Visualization"],
+    postedDate: "Feb 20, 2023",
+    applicants: 11,
+    status: "Active",
+  },
+]
+

@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from "react"
 import { ArrowDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button1"
 import Image, { StaticImageData } from "next/image"
 import img1 from "../public/image.jpeg"
 

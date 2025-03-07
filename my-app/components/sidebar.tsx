@@ -78,7 +78,7 @@ export function Sidebar() {
             {[
               { name: "Home", icon: Home, href: "/" },
               { name: "Daily Wage", icon: Briefcase, href: "/DW" },
-              { name: "Tech Professionals", icon: Users, href: "/tech-professionals" },
+              { name: "Tech Professionals", icon: Users, href: "/Technical" },
               { name: "FoodShare", icon: Utensils, href: "/food-share" },
               { name: "Settings", icon: Settings, href: "/settings" },
               { name: "Help", icon: HelpCircle, href: "/help" },

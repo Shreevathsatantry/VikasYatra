@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import { ArrowRight, Briefcase, Users, Utensils } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button1"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card1"
 import Link from "next/link"
 
 const cardData = [
