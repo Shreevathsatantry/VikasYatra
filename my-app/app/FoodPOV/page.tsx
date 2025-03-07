@@ -121,7 +121,7 @@ export default function DonationListings() {
             </Button>
 
             <Button className="bg-[#F5A742] hover:bg-[#E09632] text-white transition-all duration-300">
-              <Link href="/donate">Donate Item</Link>
+              <Link href="/FoodPOV/donate">Donate Item</Link>
             </Button>
           </div>
         </div>

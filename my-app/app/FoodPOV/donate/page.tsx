@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input1"
 import { Label } from "@/components/ui/label1"
 import { Textarea } from "@/components/ui/textarea1"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 
 export default function DonatePage() {
