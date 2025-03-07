@@ -31,6 +31,9 @@ CORS(app)
 genai.configure(api_key="AIzaSyBaNZzLDXuLpIY6r5XhKbp-qFZ53QZUf14")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
+
+
+
 # File Upload Settings
 UPLOAD_FOLDER = './uploads'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -82,7 +85,17 @@ def allowed_file(filename):
 #         return jsonify({"response": response.text})
 #     except Exception as e:
 #         return jsonify({"message": f"Error processing AI response: {str(e)}"}), 500
+def get_downloads_folder():
+    """Get the path to the Downloads folder."""
+    home = os.path.expanduser("~")
+    downloads_folder = os.path.join(home, "Downloads")
+    return downloads_folder
 
+@app.route('/PathMp4', methods=['GET'])
+def PathMp4():
+    downloads_path = get_downloads_folder()
+    video_file_name = os.path.join(downloads_path)
+    return jsonify({'message': video_file_name})
 
 @app.route("/LearnBot", methods=["POST"])
 def learnBot():
