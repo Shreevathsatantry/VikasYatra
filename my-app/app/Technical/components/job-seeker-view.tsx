@@ -13,6 +13,7 @@ import { jobListings } from "../data/job-listings"
 import { databases, COLLECTION_ID1, DATABASE_ID, BUCKET_ID } from "../../../appwrite/appwrite"
 import { ID, Storage } from "appwrite"
 import client from "../../../appwrite/appwrite"
+import { set } from "zod"
 
 interface JobSeekerViewProps {
   onBack: () => void
@@ -26,6 +27,7 @@ function VideoRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<BlobPart[]>([])
   const [stream, setStream] = useState<MediaStream | null>(null)
+  const [videoFileName , setVideofilename] = useState<string | null>(null)
 
   useEffect(() => {
     // Initialize camera to show preview even before recording
@@ -76,13 +78,14 @@ function VideoRecorder() {
         }
 
         mediaRecorder.onstop = () => {
-          const blob = new Blob(chunksRef.current, { type: "video/webm" })
+          const blob = new Blob(chunksRef.current, { type: "video/mp4" })
           const url = URL.createObjectURL(blob)
 
           // Create download link
           const a = document.createElement("a")
           a.href = url
-          a.download = `interview-recording-${new Date().toISOString()}.webm`
+          a.download = `interview-recording-${new Date().toISOString()}.mp4`
+          setVideofilename(a.download)
           a.click()
 
           // Clean up
@@ -102,6 +105,7 @@ function VideoRecorder() {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop()
       setIsRecording(false)
+      
     }
   }
 
