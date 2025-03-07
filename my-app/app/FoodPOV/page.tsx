@@ -8,7 +8,7 @@ import { MapPin, Calendar, Package, Heart, Search, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button2"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card2"
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge3"
 import { Input } from "@/components/ui/input1"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 

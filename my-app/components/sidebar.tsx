@@ -58,14 +58,14 @@ export function Sidebar() {
           )}
         >
           <Link
-            href="/login"
+            href="/Auth"
             className="flex-1 flex items-center justify-center gap-1 bg-transparent border border-vikas-orange text-vikas-orange rounded-lg py-2 px-3 text-sm hover:bg-vikas-orange hover:text-white transition-colors"
           >
             <LogIn className="w-4 h-4" />
             <span>Login</span>
           </Link>
           <Link
-            href="/signup"
+            href="/Auth"
             className="flex-1 flex items-center justify-center gap-1 bg-vikas-orange text-white rounded-lg py-2 px-3 text-sm hover:bg-vikas-orangeLight transition-colors"
           >
             <UserPlus className="w-4 h-4" />
