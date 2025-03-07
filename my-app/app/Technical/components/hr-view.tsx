@@ -6,10 +6,10 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card1"
 import { Button } from "@/components/ui/button1"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input1"
+import { Label } from "@/components/ui/label1"
+import { Textarea } from "@/components/ui/textarea1"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs1"
 import {
   ArrowLeftIcon,
   LayoutDashboardIcon,
