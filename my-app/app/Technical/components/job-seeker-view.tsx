@@ -19,6 +19,7 @@ interface JobSeekerViewProps {
   onBack: () => void
 }
 // Inline VideoRecorder component with Appwrite storage integration
+// Inline VideoRecorder component with Appwrite storage integration
 function VideoRecorder({ onVideoUploaded }) {
   const [isRecording, setIsRecording] = useState(false)
   const [recordingComplete, setRecordingComplete] = useState(false)
@@ -58,12 +59,51 @@ function VideoRecorder({ onVideoUploaded }) {
     }
   }, [])
 
+  // Add this effect to handle API call when videoFileName changes and upload to Appwrite
+  useEffect(() => {
+    const processVideo = async () => {
+      if (videoBlob && videoFileName && !isRecording && recordingComplete && !isUploading) {
+        setIsUploading(true);
+        try {
+          // First fetch the path from your API
+          const response = await fetch('http://127.0.0.1:5000/PathMp4');
+          const data = await response.json();
+          console.log('Video file path:', data.message);
+          console.log('Video file name:', videoFileName);
+          const videoPath = data.message + videoFileName;
+          console.log('Video file path:', videoPath);
+          
+          // Convert Blob to File for Appwrite storage
+          const videoFile = new File([videoBlob], videoFileName, { type: 'video/mp4' });
+          
+          // Upload video to Appwrite
+          const uploadResponse = await storage.createFile(
+            BUCKET_ID,
+            ID.unique(),
+            videoFile
+          );
+          
+          // Get the video file ID
+          const videoFileId = uploadResponse.$id;
+          console.log('Video uploaded to Appwrite, file ID:', videoFileId);
+          
+          // Send the ID back to parent component
+          onVideoUploaded(videoFileId);
+          
+        } catch (error) {
+          console.error('Error processing video:', error);
+        } finally {
+          setIsUploading(false);
+        }
+      }
+    };
+
+    processVideo();
+  }, [videoBlob, videoFileName, isRecording, recordingComplete, isUploading, onVideoUploaded]);
+
   const startRecording = async () => {
     try {
       chunksRef.current = []
-      setRecordingComplete(false)
-      setVideoBlob(null)
-      setVideoFileName(null)
 
       if (!stream) {
         const videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -86,17 +126,25 @@ function VideoRecorder({ onVideoUploaded }) {
 
         mediaRecorder.onstop = () => {
           const blob = new Blob(chunksRef.current, { type: "video/mp4" })
-          setVideoBlob(blob)
-          
-          const now = new Date()
-          const formattedDateTime = now.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0]
-          const filename = `interview-recording-${formattedDateTime}.mp4`
-          setVideoFileName(filename)
-          
+          setVideoBlob(blob);
+          const url = URL.createObjectURL(blob)
+
+          // Create download link
+          const a = document.createElement("a")
+          a.href = url
+          const now = new Date();
+          const formattedDateTime = now.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0]; 
+          const filename = `interview-recording-${formattedDateTime}.mp4`; // Fix: Use backticks (`) for template literals
+
+          a.download = filename;
+
+          setVideoFileName(filename);
+          a.click();
+
+
+          // Clean up
+          URL.revokeObjectURL(url)
           setRecordingComplete(true)
-          
-          // Upload the video immediately when recording stops
-          uploadVideo(blob, filename)
         }
 
         mediaRecorder.start()
@@ -109,45 +157,10 @@ function VideoRecorder({ onVideoUploaded }) {
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop()
-      setIsRecording(false)
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
     }
-  }
-  
-  // Move upload logic to a separate function that's called only when recording stops
-  const uploadVideo = async (blob, filename) => {
-    if (!blob || !filename) return
-    
-    setIsUploading(true)
-    try {
-      // First fetch the path from your API
-      const response = await fetch('http://127.0.0.1:5000/PathMp4')
-      const data = await response.json()
-      console.log('Video file path:', data.message)
-      console.log('Video file name:', filename)
-      
-      // Convert Blob to File for Appwrite storage
-      const videoFile = new File([blob], filename, { type: 'video/mp4' })
-      
-      // Upload video to Appwrite
-      const uploadResponse = await storage.createFile(
-        BUCKET_ID,
-        ID.unique(),
-        videoFile
-      )
-      
-      // Get the video file ID
-      const videoFileId = uploadResponse.$id
-      console.log('Video uploaded to Appwrite, file ID:', videoFileId)
-      
-      // Send the ID back to parent component
-      onVideoUploaded(videoFileId)
-    } catch (error) {
-      console.error('Error processing video:', error)
-    } finally {
-      setIsUploading(false)
-    }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -186,7 +199,7 @@ function VideoRecorder({ onVideoUploaded }) {
         {!isRecording ? (
           <Button
             onClick={startRecording}
-            disabled={isUploading}
+            disabled={recordingComplete && isUploading}
             className="bg-green-500 hover:bg-green-600 text-white shadow-lg transform transition hover:scale-105"
           >
             <PlayIcon className="h-4 w-4 mr-2" /> Start Recording
@@ -203,6 +216,7 @@ function VideoRecorder({ onVideoUploaded }) {
     </div>
   )
 }
+
 // Modify the JobSeekerView component to handle the video upload
 export default function JobSeekerView({ onBack }: JobSeekerViewProps) {
   const [selectedJob, setSelectedJob] = useState<number | null>(null)

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input1"
 import { Label } from "@/components/ui/label1"
 import { Textarea } from "@/components/ui/textarea1"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs1"
-import { databases , COLLECTION_ID , DATABASE_ID } from "../../../appwrite/appwrite";
+import { databases, storage, COLLECTION_ID , COLLECTION_ID1, DATABASE_ID, BUCKET_ID } from "../../../appwrite/appwrite";
 import { ID } from "appwrite";
 import {
   ArrowLeftIcon,
@@ -48,6 +48,40 @@ export default function HRView({ onBack }: HRViewProps) {
     setSelectedJob(jobId)
     setShowApplicants(true)
   }
+  // Then in your HRView component, add this function:
+  const handleVideoDownload = async (videoId) => {
+    try {
+      // Get the file download URL from Appwrite
+      // You need to define BUCKET_ID in your appwrite config or pass it as a constant here
+       // Replace with your actual bucket ID
+      
+      const fileUrl = storage.getFileDownload(BUCKET_ID, videoId);
+      
+      // Create a temporary anchor element to trigger the download
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.setAttribute('download', `interview-${videoId}`);
+      link.setAttribute('target', '_blank');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading video:", error);
+      alert("Failed to download the interview video.");
+    }
+  };
+const handleVideoView = async (videoId) => {
+  try {
+    // Get the file view URL
+    const fileUrl = await storage.getFileView(BUCKET_ID, videoId);
+    
+    // Open in new tab
+    window.open(fileUrl, '_blank');
+  } catch (error) {
+    console.error("Error viewing video:", error);
+    alert("Failed to view the interview video.");
+  }
+};
 
   const handleCreateJob = async (e) => {
     e.preventDefault();
@@ -185,9 +219,16 @@ export default function HRView({ onBack }: HRViewProps) {
                             </div>
 
                             <div className="mt-4 flex gap-2">
-                              <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
-                                View Interview
-                              </Button>
+                            <Button 
+                              size="sm" 
+                              className="bg-orange-500 hover:bg-orange-600 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent event bubbling
+                                handleVideoDownload(applicant.videoId);
+                              }}
+                            >
+                              View Interview
+                            </Button>
                               <Button size="sm" variant="outline">
                                 Contact
                               </Button>

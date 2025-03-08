@@ -18,7 +18,7 @@ export const PROJECT_ID = '67cb40b4000f4de5fb71';
 export const DATABASE_ID = '67cb457d0023ee962892';
 export const COLLECTION_ID = '67cb459c001bd4a8e42a';
 export const COLLECTION_ID1 = '67cb5212000c1dad7b3f';
-export const BUCKET_ID = '67cb530f0032db298a66';
+export const BUCKET_ID = '67cb8f6d001bd371a845';
 
 
 export const Events= 'Eventid';
