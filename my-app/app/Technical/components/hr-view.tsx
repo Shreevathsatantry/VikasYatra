@@ -37,7 +37,7 @@ export default function HRView({ onBack }: HRViewProps) {
   // Changed skills type from string[] to string
   const [newJob, setNewJob] = useState({
     title: "",
-    company: "FairFi Inc.",
+    
     description: "",
     location: "",
     salary: "",
@@ -48,6 +48,27 @@ export default function HRView({ onBack }: HRViewProps) {
     setSelectedJob(jobId)
     setShowApplicants(true)
   }
+  const handleResumeView = async (videoId) => {
+    try {
+      // Get the file download URL from Appwrite
+      // You need to define BUCKET_ID in your appwrite config or pass it as a constant here
+       // Replace with your actual bucket ID
+      
+      const fileUrl = storage.getFileDownload(BUCKET_ID, videoId);
+      
+      // Create a temporary anchor element to trigger the download
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.setAttribute('download', `interview-${videoId}`);
+      link.setAttribute('target', '_blank');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading video:", error);
+      alert("Failed to download the interview video.");
+    }
+  };
   // Then in your HRView component, add this function:
   const handleVideoDownload = async (videoId) => {
     try {
@@ -141,7 +162,7 @@ const handleVideoView = async (videoId) => {
                         <div className="flex flex-col md:flex-row md:items-center justify-between">
                           <div>
                             <h3 className="text-xl font-bold">{job.title}</h3>
-                            <p className="text-gray-500 text-sm">{job.company}</p>
+                            
                           </div>
 
                           <div className="flex flex-col md:flex-row gap-4 mt-4 md:mt-0">
@@ -152,7 +173,7 @@ const handleVideoView = async (videoId) => {
 
                             <div className="flex items-center gap-2 text-gray-600">
                               <UsersIcon className="h-4 w-4" />
-                              <span className="text-sm">Applicants: {job.applicants}</span>
+                              
                             </div>
 
                             <div className="flex items-center gap-2">
@@ -199,6 +220,10 @@ const handleVideoView = async (videoId) => {
                             <div className="mt-2">
                               <a
                                 href="#"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleResumeView(applicant.resumeid);
+                                }}
                                 className="text-orange-500 hover:text-orange-600 text-sm flex items-center gap-1"
                               >
                                 View Resume
