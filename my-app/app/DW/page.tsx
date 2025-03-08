@@ -3,6 +3,7 @@
 import type React from "react"
 import { useNavigate } from 'react-router-dom';
 import { useState } from "react"
+import { Sidebar } from "@/components/sidebar";
 import { ChevronUp, Briefcase, FileText, MessageSquare } from "lucide-react"
 
 export default function DailyWageWorkersPage() {
@@ -18,6 +19,7 @@ export default function DailyWageWorkersPage() {
               <span className="text-black">Vikas</span>
               <span className="text-[#FF9D2E]">Yatra</span>
             </h1>
+            <Sidebar />
             <h2 className="text-2xl md:text-3xl font-bold mt-2">Empowering Daily Wage Workers</h2>
           </div>
           <div className="mt-4 md:mt-0">

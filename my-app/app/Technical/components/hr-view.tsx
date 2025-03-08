@@ -48,7 +48,7 @@ export default function HRView({ onBack }: HRViewProps) {
     setSelectedJob(jobId)
     setShowApplicants(true)
   }
-  const handleResumeView = async (videoId) => {
+  const handleResumeView = async (videoid) => {
     try {
       // Get the file download URL from Appwrite
       // You need to define BUCKET_ID in your appwrite config or pass it as a constant here
